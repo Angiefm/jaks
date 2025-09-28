@@ -1,0 +1,24 @@
+# Embeddings y NLP - Updated versions for compatibility
+sentence-transformers>=2.2.2
+transformers>=4.30.0
+
+# Base de datos vectorial - Updated to newer version
+chromadb>=0.4.15
+
+# Procesamiento de documentos
+PyPDF2==3.0.1
+beautifulsoup4==4.11.1
+
+# ML básico
+scikit-learn==1.3.2
+numpy==1.26.4
+pandas==2.2.2
+
+# API y Web
+fastapi>=0.100.0
+uvicorn>=0.23.0
+streamlit>=1.28.0
+
+# Utilidades
+python-dotenv>=1.0.0
+tqdm>=4.65.0
