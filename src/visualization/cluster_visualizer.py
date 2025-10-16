@@ -93,22 +93,37 @@ class ClusterVisualizer:
         
         return fig
     
-    def plot_cluster_sizes(self, cluster_info: Dict[str, Any]) -> go.Figure:
+    def plot_cluster_sizes(self, cluster_info):
         """Gráfico de tamaños de clusters"""
-        
-        sizes = cluster_info['sizes']
+        import numpy as np
+        import plotly.graph_objects as go
+    
+        # Detectar dónde están los tamaños
+        if "sizes" in cluster_info:
+            sizes = cluster_info["sizes"]
+        elif "cluster_sizes" in cluster_info:
+            sizes = cluster_info["cluster_sizes"]
+        elif "labels" in cluster_info:
+            labels_array = np.array(cluster_info["labels"])
+            unique, counts = np.unique(labels_array, return_counts=True)
+            sizes = {int(k): int(v) for k, v in zip(unique, counts)}
+        else:
+            raise KeyError("El diccionario 'cluster_info' debe tener 'sizes', 'cluster_sizes' o 'labels'.")
+    
         labels = [f"Cluster {k}" if k != -1 else "Ruido" for k in sizes.keys()]
         values = list(sizes.values())
-        
+    
         fig = go.Figure(data=[
             go.Bar(x=labels, y=values, marker_color='lightblue')
         ])
-        
+    
         fig.update_layout(
             title="Distribución de Documentos por Cluster",
             xaxis_title="Cluster",
             yaxis_title="Número de Documentos",
             template='plotly_white'
         )
-        
+    
         return fig
+    
+        
