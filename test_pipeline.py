@@ -1,51 +1,32 @@
-#!/usr/bin/env python3
-"""Test rápido del pipeline"""
-import sys
-import os
-from pathlib import Path
+import requests
+import json
 
-# Agregar src al PYTHONPATH
-project_root = Path(__file__).parent
-src_path = project_root / "src"
-sys.path.insert(0, str(src_path))
-
-# Ahora importar sin el prefijo src.
-from storage.vector_store import VectorStore
-from embeddings.embedding_engine import EmbeddingEngine
-
-def test_pipeline():
-    print("🧪 Testing pipeline components...")
+def test_api():
+    base_url = "http://localhost:8000"
     
-    # Test vector store
-    print("\n1. Testing Vector Store...")
+    print("testing API endpoints...")
+    
     try:
-        store = VectorStore()
-        info = store.get_collection_info()
-        print(f"   Documents in store: {info.get('document_count', 0)}")
-        
-        # Test search si hay documentos
-        if info.get('document_count', 0) > 0:
-            print("\n2. Testing Search...")
-            engine = EmbeddingEngine()
-            query = "Spring Boot REST API"
-            query_embedding = engine.encode_query(query)
-            
-            results = store.search_similar(query_embedding, top_k=3)
-            print(f"   Found {len(results)} similar documents for query: '{query}'")
-            
-            for i, result in enumerate(results, 1):
-                title = result['metadata'].get('title', 'Unknown')
-                similarity = result.get('similarity', 0)
-                print(f"   {i}. {title} (similarity: {similarity:.3f})")
-        else:
-            print("\n   No documents in store yet. Run ingestion first!")
-            
-    except Exception as e:
-        print(f"   ❌ Error: {e}")
-        return False
+        response = requests.get(f"{base_url}/health")
+        print(f"health: {response.json()}")
+    except:
+        print("API not running. Start with: python scripts/run_api.py")
+        return
     
-    print("\n✅ Pipeline test completed!")
-    return True
+    try:
+        response = requests.get(f"{base_url}/system/info")
+        print(f"system info: {response.json()}")
+    except Exception as e:
+        print(f"system info failed: {e}")
+    
+    try:
+        response = requests.get(f"{base_url}/search?q=Spring Boot REST&top_k=3")
+        results = response.json()
+        print(f"search results: {results['total_results']} found")
+        for i, result in enumerate(results['results'][:2], 1):
+            print(f"  {i}. {result['title']} ({result['similarity_score']})")
+    except Exception as e:
+        print(f"search failed: {e}")
 
 if __name__ == "__main__":
-    test_pipeline()
+    test_api()

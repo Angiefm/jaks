@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-"""Pipeline completo del sistema"""
+"""pipeline completo del sistema"""
 import sys
 from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent / "src"))
@@ -18,58 +17,52 @@ from clustering.dimensionality_reducer import DimensionalityReducer
 def main():
     logging.basicConfig(level=logging.INFO)
     
-    print("🚀 PIPELINE COMPLETO DEL SISTEMA")
+    print("pipeline completo del sistema")
     print("="*50)
     
-    # 1. Cargar documentos
-    print("\n📚 Paso 1: Cargando documentos...")
+    print("\npaso 1: cargando documentos...")
     loader = DocumentLoader()
     docs = loader.load_documents_from_directory("data/raw/github_docs")
-    print(f"   ✅ {len(docs)} documentos cargados")
+    print(f"   {len(docs)} documentos cargados")
     
-    # 2. Generar embeddings y almacenar
-    print("\n🧠 Paso 2: Generando embeddings...")
+    print("\npaso 2: generando embeddings...")
     engine = EmbeddingEngine()
     embeddings_dict = engine.encode_documents(docs)
     
     store = VectorStore()
     store.delete_all_documents()
     store.add_documents(docs, embeddings_dict)
-    print(f"   ✅ {len(embeddings_dict)} embeddings generados y almacenados")
+    print(f"   {len(embeddings_dict)} embeddings generados y almacenados")
     
-    # 3. Entrenar modelos de calidad
-    print("\n🎯 Paso 3: Entrenando modelos de calidad...")
+    print("\npaso 3: entrenando modelos de calidad...")
     classifier = QualityClassifier()
     quality_report = classifier.train(docs)
-    print(f"   ✅ Clasificador entrenado (Accuracy: {quality_report['accuracy']:.3f})")
+    print(f"   clasificador entrenado (Accuracy: {quality_report['accuracy']:.3f})")
     
     detector = AnomalyDetector()
     anomaly_report = detector.train(docs)
-    print(f"   ✅ Detector entrenado ({anomaly_report['anomalies_detected']} anomalías)")
+    print(f"   detector entrenado ({anomaly_report['anomalies_detected']} anomalías)")
     
-    # 4. Clustering
-    print("\n🗂️ Paso 4: Ejecutando clustering...")
+    print("\npaso 4: ejecutando clustering...")
     embeddings_array = np.array(list(embeddings_dict.values()))
     
     cluster_engine = ClusterEngine()
     cluster_results = cluster_engine.cluster_hdbscan(embeddings_array, min_cluster_size=3)
-    print(f"   ✅ {cluster_results['n_clusters']} clusters encontrados")
+    print(f"   {cluster_results['n_clusters']} clusters encontrados")
     
-    # 5. Reducción dimensional
-    print("\n📊 Paso 5: Reducción dimensional...")
+    print("\npaso 5: reducción dimensional...")
     reducer = DimensionalityReducer()
     embeddings_2d = reducer.fit_transform_2d(embeddings_array)
-    print(f"   ✅ Reducción a 2D completada")
+    print(f"   reducción a 2D completada")
     
-    # Resumen final
     print("\n" + "="*50)
-    print("🎉 PIPELINE COMPLETADO EXITOSAMENTE")
-    print(f"   📚 Documentos: {len(docs)}")
-    print(f"   🎯 Calidad promedio: {quality_report.get('accuracy', 0)*100:.1f}%")
-    print(f"   🗂️ Clusters: {cluster_results['n_clusters']}")
-    print(f"   ⚠️  Anomalías: {anomaly_report['anomaly_rate']:.1%}")
-    print("\n💡 Sistema listo para usar!")
-    print("   Ejecuta: python scripts/run_ui.py")
+    print("pipeline completado exitosamente")
+    print(f"   documentos: {len(docs)}")
+    print(f"   calidad promedio: {quality_report.get('accuracy', 0)*100:.1f}%")
+    print(f"   clusters: {cluster_results['n_clusters']}")
+    print(f"   anomalías: {anomaly_report['anomaly_rate']:.1%}")
+    print("\nsistema listo para usar")
+    print("   ejecuta: python scripts/run_ui.py")
 
 if __name__ == "__main__":
     main()

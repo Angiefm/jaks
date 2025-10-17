@@ -16,15 +16,12 @@ class ClusterVisualizer:
                         hover_text: List[str] = None) -> go.Figure:
         """Visualización 2D de clusters"""
         
-        # Preparar colores
         unique_labels = sorted(set(labels))
         color_map = {label: i for i, label in enumerate(unique_labels)}
         colors = [color_map[label] for label in labels]
         
-        # Crear figura
         fig = go.Figure()
         
-        # Agregar puntos por cluster
         for label in unique_labels:
             mask = labels == label
             cluster_name = f"Cluster {label}" if label != -1 else "Ruido"
@@ -98,7 +95,6 @@ class ClusterVisualizer:
         import numpy as np
         import plotly.graph_objects as go
     
-        # Detectar dónde están los tamaños
         if "sizes" in cluster_info:
             sizes = cluster_info["sizes"]
         elif "cluster_sizes" in cluster_info:
